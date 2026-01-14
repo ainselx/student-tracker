@@ -201,12 +201,6 @@
             font-size: 1.1rem;
         }
 
-        .student-subject {
-            color: #667eea;
-            font-size: 0.9rem;
-            margin-top: 3px;
-        }
-
         .student-group-badge {
             font-size: 0.75rem;
             padding: 4px 10px;
@@ -592,15 +586,9 @@
                         <input type="text" id="name" required placeholder="Иванов Иван">
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Телефон</label>
-                            <input type="tel" id="phone" placeholder="+7 999 123-45-67">
-                        </div>
-                        <div class="form-group">
-                            <label>Предмет</label>
-                            <input type="text" id="subject" required placeholder="Математика">
-                        </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" id="phone" placeholder="+7 999 123-45-67">
                     </div>
 
                     <div class="form-row">
@@ -641,7 +629,7 @@
             <div class="card">
                 <h2>Список учеников</h2>
                 <div class="search-filter-row">
-                    <input type="text" id="searchInput" placeholder="Поиск по имени или предмету...">
+                    <input type="text" id="searchInput" placeholder="Поиск по имени...">
                     <select id="filterGroup">
                         <option value="">Все группы</option>
                     </select>
@@ -1013,8 +1001,7 @@
             // Поиск по тексту
             if (filter) {
                 filtered = filtered.filter(s =>
-                    s.name.toLowerCase().includes(filter.toLowerCase()) ||
-                    s.subject.toLowerCase().includes(filter.toLowerCase())
+                    s.name.toLowerCase().includes(filter.toLowerCase())
                 );
             }
 
@@ -1037,7 +1024,6 @@
                         <div class="student-header">
                             <div>
                                 <div class="student-name">${escapeHtml(student.name)}</div>
-                                <div class="student-subject">${escapeHtml(student.subject)}</div>
                             </div>
                             ${groupBadge}
                         </div>
@@ -1076,7 +1062,6 @@
             const studentData = {
                 name: document.getElementById('name').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
-                subject: document.getElementById('subject').value.trim(),
                 monthly_payment: parseInt(document.getElementById('monthlyPayment').value),
                 lessons_per_month: parseInt(document.getElementById('lessonsPerMonth').value),
                 lesson_duration: parseInt(document.getElementById('lessonDuration').value),
@@ -1129,7 +1114,6 @@
             document.getElementById('editId').value = student.id;
             document.getElementById('name').value = student.name;
             document.getElementById('phone').value = student.phone || '';
-            document.getElementById('subject').value = student.subject;
             document.getElementById('monthlyPayment').value = student.monthly_payment;
             document.getElementById('lessonsPerMonth').value = student.lessons_per_month;
             document.getElementById('lessonDuration').value = student.lesson_duration;
