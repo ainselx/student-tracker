@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет учеников</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-edit {
+            background: #ffa502;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            margin-right: 5px;
+        }
+
+        .student-list {
+            margin-top: 10px;
+        }
+
+        .student-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .student-subject {
+            color: #667eea;
+            font-size: 0.9rem;
+            margin-top: 3px;
+        }
+
+        .student-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        @media (max-width: 400px) {
+            .student-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .student-details span {
+            background: #e8e8e8;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .price-highlight {
+            background: #d4edda !important;
+            color: #155724 !important;
+            font-weight: 600;
+        }
+
+        .student-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 500px) {
+            .summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .summary-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .summary-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Учет учеников</h1>
+
+        <!-- Статистика -->
+        <div class="card">
+            <div class="summary">
+                <div class="summary-item">
+                    <div class="summary-value" id="totalStudents">0</div>
+                    <div class="summary-label">Учеников</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="totalLessons">0</div>
+                    <div class="summary-label">Занятий/мес</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="totalIncome">0</div>
+                    <div class="summary-label">Доход/мес</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Форма добавления -->
+        <div class="card">
+            <h2 id="formTitle">Добавить ученика</h2>
+            <form id="studentForm">
+                <input type="hidden" id="editId">
+
+                <div class="form-group">
+                    <label>ФИО ученика</label>
+                    <input type="text" id="name" required placeholder="Иванов Иван">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" id="phone" placeholder="+7 999 123-45-67">
+                    </div>
+                    <div class="form-group">
+                        <label>Предмет</label>
+                        <input type="text" id="subject" required placeholder="Математика">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Оплата в месяц (руб)</label>
+                        <input type="number" id="monthlyPayment" required min="0" placeholder="8000">
+                    </div>
+                    <div class="form-group">
+                        <label>Занятий в месяц</label>
+                        <input type="number" id="lessonsPerMonth" required min="1" placeholder="8">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Длительность занятия (мин)</label>
+                    <select id="lessonDuration">
+                        <option value="45">45 минут</option>
+                        <option value="60" selected>60 минут (1 час)</option>
+                        <option value="90">90 минут (1.5 часа)</option>
+                        <option value="120">120 минут (2 часа)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">Добавить</button>
+                <button type="button" class="btn" id="cancelBtn" style="margin-top: 10px; background: #e0e0e0; display: none;">Отмена</button>
+            </form>
+        </div>
+
+        <!-- Список учеников -->
+        <div class="card">
+            <h2>Список учеников</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Поиск по имени или предмету...">
+            </div>
+            <div class="student-list" id="studentList">
+                <div class="empty-state">Список пуст. Добавьте первого ученика!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные учеников
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+
+        // Элементы DOM
+        const form = document.getElementById('studentForm');
+        const studentList = document.getElementById('studentList');
+        const searchInput = document.getElementById('searchInput');
+        const formTitle = document.getElementById('formTitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const editIdInput = document.getElementById('editId');
+
+        // Сохранение в localStorage
+        function saveData() {
+            localStorage.setItem('students', JSON.stringify(students));
+        }
+
+        // Расчет стоимости одного занятия
+        function calculateLessonPrice(monthlyPayment, lessonsPerMonth) {
+            if (lessonsPerMonth <= 0) return 0;
+            return Math.round(monthlyPayment / lessonsPerMonth);
+        }
+
+        // Расчет стоимости за час
+        function calculateHourlyRate(monthlyPayment, lessonsPerMonth, duration) {
+            const lessonPrice = calculateLessonPrice(monthlyPayment, lessonsPerMonth);
+            return Math.round(lessonPrice / duration * 60);
+        }
+
+        // Обновление статистики
+        function updateSummary() {
+            const totalStudents = students.length;
+            const totalLessons = students.reduce((sum, s) => sum + s.lessonsPerMonth, 0);
+            const totalIncome = students.reduce((sum, s) => sum + s.monthlyPayment, 0);
+
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('totalLessons').textContent = totalLessons;
+            document.getElementById('totalIncome').textContent = totalIncome.toLocaleString('ru-RU');
+        }
+
+        // Отрисовка списка учеников
+        function renderStudents(filter = '') {
+            const filtered = students.filter(s =>
+                s.name.toLowerCase().includes(filter.toLowerCase()) ||
+                s.subject.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+                studentList.innerHTML = '<div class="empty-state">' +
+                    (filter ? 'Ничего не найдено' : 'Список пуст. Добавьте первого ученика!') +
+                    '</div>';
+                return;
+            }
+
+            studentList.innerHTML = filtered.map(student => {
+                const lessonPrice = calculateLessonPrice(student.monthlyPayment, student.lessonsPerMonth);
+                const hourlyRate = calculateHourlyRate(student.monthlyPayment, student.lessonsPerMonth, student.lessonDuration);
+
+                return `
+                    <div class="student-item">
+                        <div class="student-name">${escapeHtml(student.name)}</div>
+                        <div class="student-subject">${escapeHtml(student.subject)}</div>
+                        <div class="student-details">
+                            <span>${student.phone || 'Нет телефона'}</span>
+                            <span>${student.lessonsPerMonth} зан/мес × ${student.lessonDuration} мин</span>
+                            <span>${student.monthlyPayment.toLocaleString('ru-RU')} руб/мес</span>
+                            <span class="price-highlight">${lessonPrice.toLocaleString('ru-RU')} руб/занятие</span>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-edit" onclick="editStudent('${student.id}')">Изменить</button>
+                            <button class="btn btn-danger" onclick="deleteStudent('${student.id}')">Удалить</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Защита от XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Генерация уникального ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Добавление/редактирование ученика
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const studentData = {
+                id: editIdInput.value || generateId(),
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                subject: document.getElementById('subject').value.trim(),
+                monthlyPayment: parseInt(document.getElementById('monthlyPayment').value),
+                lessonsPerMonth: parseInt(document.getElementById('lessonsPerMonth').value),
+                lessonDuration: parseInt(document.getElementById('lessonDuration').value)
+            };
+
+            if (editIdInput.value) {
+                // Редактирование
+                const index = students.findIndex(s => s.id === editIdInput.value);
+                if (index !== -1) {
+                    students[index] = studentData;
+                }
+                cancelEdit();
+            } else {
+                // Добавление
+                students.push(studentData);
+            }
+
+            saveData();
+            renderStudents(searchInput.value);
+            updateSummary();
+            form.reset();
+            document.getElementById('lessonDuration').value = '60';
+        });
+
+        // Редактирование ученика
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+
+            editIdInput.value = student.id;
+            document.getElementById('name').value = student.name;
+            document.getElementById('phone').value = student.phone;
+            document.getElementById('subject').value = student.subject;
+            document.getElementById('monthlyPayment').value = student.monthlyPayment;
+            document.getElementById('lessonsPerMonth').value = student.lessonsPerMonth;
+            document.getElementById('lessonDuration').value = student.lessonDuration;
+
+            formTitle.textContent = 'Редактирование';
+            submitBtn.textContent = 'Сохранить';
+            cancelBtn.style.display = 'block';
+
+            // Прокрутка к форме
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Отмена редактирования
+        function cancelEdit() {
+            editIdInput.value = '';
+            form.reset();
+            document.getElementById('lessonDuration').value = '60';
+            formTitle.textContent = 'Добавить ученика';
+            submitBtn.textContent = 'Добавить';
+            cancelBtn.style.display = 'none';
+        }
+
+        cancelBtn.addEventListener('click', cancelEdit);
+
+        // Удаление ученика
+        function deleteStudent(id) {
+            if (confirm('Удалить этого ученика?')) {
+                students = students.filter(s => s.id !== id);
+                saveData();
+                renderStudents(searchInput.value);
+                updateSummary();
+
+                if (editIdInput.value === id) {
+                    cancelEdit();
+                }
+            }
+        }
+
+        // Поиск
+        searchInput.addEventListener('input', function() {
+            renderStudents(this.value);
+        });
+
+        // Инициализация
+        renderStudents();
+        updateSummary();
+    </script>
+</body>
+</html>
