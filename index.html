@@ -14,91 +14,451 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h1 {
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .sidebar-header .user-email {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .sidebar-nav li a .icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 260px;
             min-height: 100vh;
             padding: 20px;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-email {
-            color: rgba(255,255,255,0.9);
-            font-size: 0.85rem;
-        }
-
-        .btn-logout {
-            background: rgba(255,255,255,0.2);
-            color: white;
+        /* Mobile menu */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #667eea;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            font-size: 1.5rem;
             cursor: pointer;
-            font-size: 0.85rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .btn-logout:hover {
-            background: rgba(255,255,255,0.3);
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
         }
 
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .overlay.open {
+                display: block;
+            }
+        }
+
+        /* Page header */
+        .page-header {
+            margin-bottom: 25px;
+            padding-left: 50px;
+        }
+
+        @media (min-width: 769px) {
+            .page-header {
+                padding-left: 0;
+            }
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        /* Cards */
         .card {
             background: white;
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
-        .card h2 {
-            color: #333;
+        .card-title {
+            font-size: 1rem;
+            color: #666;
             margin-bottom: 15px;
-            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-card .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-card .stat-label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .stat-icon.purple { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+        .stat-icon.green { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
+        .stat-icon.orange { background: rgba(255, 165, 2, 0.15); color: #ffa502; }
+        .stat-icon.blue { background: rgba(30, 144, 255, 0.15); color: #1e90ff; }
+
+        /* Quick actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .quick-action-btn:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .quick-action-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .group-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-icon:hover {
+            opacity: 0.8;
+        }
+
+        .btn-icon.edit {
+            background: #ffa502;
+            color: white;
+        }
+
+        .btn-icon.delete {
+            background: #ff4757;
+            color: white;
+        }
+
+        /* Search bar */
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-bar select {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .modal-header h3 {
+            font-size: 1.2rem;
+            color: #333;
         }
 
-        label {
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
             display: block;
+            margin-bottom: 6px;
             color: #555;
-            margin-bottom: 5px;
             font-size: 0.9rem;
         }
 
-        input, select {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            font-size: 1rem;
         }
 
-        input:focus, select:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -113,26 +473,16 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
-            header {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
         }
 
         .btn {
-            width: 100%;
-            padding: 14px;
+            padding: 14px 24px;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
+            transition: opacity 0.2s;
         }
 
         .btn:disabled {
@@ -143,203 +493,130 @@
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            width: 100%;
         }
 
         .btn-primary:hover:not(:disabled) {
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            opacity: 0.9;
         }
 
-        .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-            margin-top: 10px;
+        /* Groups page */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
 
-        .btn-danger {
-            background: #ff4757;
-            color: white;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            width: auto;
-        }
-
-        .btn-edit {
-            background: #ffa502;
-            color: white;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            width: auto;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.85rem;
-            width: auto;
-        }
-
-        .student-list {
-            margin-top: 10px;
-        }
-
-        .student-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
+        .group-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
             border-left: 4px solid #667eea;
         }
 
-        .student-header {
+        .group-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .group-card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            margin-bottom: 15px;
         }
 
-        .student-name {
+        .group-card-name {
+            font-size: 1.2rem;
             font-weight: 600;
             color: #333;
-            font-size: 1.1rem;
         }
 
-        .student-group-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 500;
-        }
-
-        .student-details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-            font-size: 0.85rem;
+        .group-card-count {
+            font-size: 0.9rem;
             color: #666;
         }
 
-        @media (max-width: 400px) {
-            .student-details {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .student-details span {
-            background: #e8e8e8;
-            padding: 6px 10px;
-            border-radius: 6px;
-        }
-
-        .price-highlight {
-            background: #d4edda !important;
-            color: #155724 !important;
-            font-weight: 600;
-        }
-
-        .student-actions {
-            margin-top: 12px;
+        .group-card-actions {
             display: flex;
             gap: 8px;
         }
 
-        .empty-state {
-            text-align: center;
-            color: #999;
-            padding: 30px;
-        }
-
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            text-align: center;
-        }
-
-        @media (max-width: 500px) {
-            .summary {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .summary-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .summary-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .search-filter-row {
+        /* Group detail */
+        .group-detail-header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .search-filter-row input {
-            flex: 1;
+        .back-btn {
+            background: #f0f2f5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
         }
 
-        .search-filter-row select {
-            width: 150px;
-            flex-shrink: 0;
+        .group-detail-title {
+            font-size: 1.5rem;
+            color: #333;
         }
 
-        @media (max-width: 500px) {
-            .search-filter-row {
-                flex-direction: column;
-            }
-            .search-filter-row select {
-                width: 100%;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Auth styles */
+        /* Auth */
         .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
             max-width: 400px;
-            margin: 50px auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .auth-card h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
         }
 
         .auth-tabs {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            background: #f0f2f5;
+            border-radius: 10px;
+            padding: 4px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            font-size: 1rem;
+            background: transparent;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .auth-tab:first-child {
-            border-radius: 8px 0 0 8px;
-        }
-
-        .auth-tab:last-child {
-            border-radius: 0 8px 8px 0;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
         }
 
         .auth-tab.active {
             background: white;
             color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .error-message {
@@ -360,17 +637,19 @@
             font-size: 0.9rem;
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: white;
+        /* Loading */
+        .loading-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.3);
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s linear infinite;
@@ -380,88 +659,41 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Groups styles */
-        .groups-list {
+        /* Page sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Color picker */
+        .color-picker {
             display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .group-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 20px;
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .group-item-name {
-            font-weight: 500;
-        }
-
-        .group-item-count {
-            background: rgba(255,255,255,0.3);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-        }
-
-        .group-item-actions {
-            display: flex;
-            gap: 4px;
-        }
-
-        .group-item-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .group-item-btn:hover {
-            background: rgba(255,255,255,0.4);
-        }
-
-        .add-group-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .add-group-form input[type="text"] {
-            flex: 1;
-        }
-
-        .add-group-form input[type="color"] {
-            width: 50px;
-            padding: 5px;
-            height: 44px;
-        }
-
-        .add-group-form button {
-            width: auto;
-            padding: 12px 20px;
-        }
-
-        .color-options {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
         }
 
         .color-option {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 3px solid transparent;
             cursor: pointer;
@@ -478,201 +710,320 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Loading -->
-        <div id="loadingView" class="loading">
-            <div class="spinner"></div>
-            <p style="margin-top: 15px;">Загрузка...</p>
-        </div>
+    <!-- Loading -->
+    <div id="loadingView" class="loading-container">
+        <div class="spinner"></div>
+    </div>
 
-        <!-- Auth View -->
-        <div id="authView" class="auth-container hidden">
-            <h1 style="text-align: center; margin-bottom: 20px;">Учет учеников</h1>
-
+    <!-- Auth -->
+    <div id="authView" class="auth-container hidden">
+        <div class="auth-card">
+            <h1>Учет учеников</h1>
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="showAuthTab('login')">Вход</button>
                 <button class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
             </div>
 
-            <div class="card">
-                <div id="authError" class="error-message hidden"></div>
-                <div id="authSuccess" class="success-message hidden"></div>
+            <div id="authError" class="error-message hidden"></div>
+            <div id="authSuccess" class="success-message hidden"></div>
 
-                <!-- Login Form -->
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" required placeholder="your@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Пароль</label>
-                        <input type="password" id="loginPassword" required placeholder="Ваш пароль" minlength="6">
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="loginBtn">Войти</button>
-                </form>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" required placeholder="Ваш пароль" minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" id="loginBtn">Войти</button>
+            </form>
 
-                <!-- Register Form -->
-                <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="registerEmail" required placeholder="your@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Пароль</label>
-                        <input type="password" id="registerPassword" required placeholder="Минимум 6 символов" minlength="6">
-                    </div>
-                    <div class="form-group">
-                        <label>Подтвердите пароль</label>
-                        <input type="password" id="registerPasswordConfirm" required placeholder="Повторите пароль" minlength="6">
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="registerBtn">Зарегистрироваться</button>
-                </form>
-            </div>
+            <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="registerPassword" required placeholder="Минимум 6 символов" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Подтвердите пароль</label>
+                    <input type="password" id="registerPasswordConfirm" required placeholder="Повторите пароль" minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" id="registerBtn">Зарегистрироваться</button>
+            </form>
         </div>
+    </div>
 
-        <!-- App View -->
-        <div id="appView" class="hidden">
-            <header>
+    <!-- App -->
+    <div id="appView" class="hidden">
+        <!-- Mobile menu toggle -->
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
                 <h1>Учет учеников</h1>
-                <div class="user-info">
-                    <span class="user-email" id="userEmail"></span>
-                    <button class="btn-logout" onclick="handleLogout()">Выйти</button>
-                </div>
-            </header>
-
-            <!-- Статистика -->
-            <div class="card">
-                <div class="summary">
-                    <div class="summary-item">
-                        <div class="summary-value" id="totalStudents">0</div>
-                        <div class="summary-label">Учеников</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-value" id="totalLessons">0</div>
-                        <div class="summary-label">Занятий/мес</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-value" id="totalIncome">0</div>
-                        <div class="summary-label">Доход/мес</div>
-                    </div>
-                </div>
+                <div class="user-email" id="userEmail"></div>
             </div>
-
-            <!-- Группы -->
-            <div class="card">
-                <h2>
-                    Группы
-                    <button class="btn btn-primary btn-small" onclick="toggleGroupForm()">+ Добавить</button>
-                </h2>
-                <div class="groups-list" id="groupsList">
-                    <div class="empty-state">Нет групп</div>
-                </div>
-                <div id="addGroupForm" class="add-group-form hidden">
-                    <input type="text" id="groupName" placeholder="Название группы" required>
-                    <input type="color" id="groupColor" value="#667eea">
-                    <button class="btn btn-primary" onclick="saveGroup()">Сохранить</button>
-                </div>
-                <input type="hidden" id="editGroupId">
+            <ul class="sidebar-nav">
+                <li><a class="active" onclick="showPage('home')"><span class="icon">🏠</span> Главная</a></li>
+                <li><a onclick="showPage('students')"><span class="icon">👥</span> Ученики</a></li>
+                <li><a onclick="showPage('groups')"><span class="icon">📁</span> Группы</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick="handleLogout()">Выйти</button>
             </div>
+        </aside>
 
-            <!-- Форма добавления -->
-            <div class="card">
-                <h2 id="formTitle">Добавить ученика</h2>
-                <form id="studentForm">
-                    <input type="hidden" id="editId">
+        <!-- Main content -->
+        <main class="main-content">
+            <!-- Home page -->
+            <section id="homePage" class="page-section active">
+                <div class="page-header">
+                    <h2>Главная</h2>
+                </div>
 
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon purple">👥</div>
+                        <div class="stat-value" id="statStudents">0</div>
+                        <div class="stat-label">Всего учеников</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">📅</div>
+                        <div class="stat-value" id="statLessonsWeek">0</div>
+                        <div class="stat-label">Занятий в неделю</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">💰</div>
+                        <div class="stat-value" id="statIncomeWeek">0</div>
+                        <div class="stat-label">Доход в неделю</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">📊</div>
+                        <div class="stat-value" id="statIncomeMonth">0</div>
+                        <div class="stat-label">Доход в месяц</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Быстрые действия</div>
+                    <div class="quick-actions">
+                        <a class="quick-action-btn" onclick="showPage('students'); openStudentModal()">
+                            <span class="icon">➕</span>
+                            <span>Добавить ученика</span>
+                        </a>
+                        <a class="quick-action-btn" onclick="showPage('groups'); openGroupModal()">
+                            <span class="icon">📁</span>
+                            <span>Добавить группу</span>
+                        </a>
+                        <a class="quick-action-btn" onclick="showPage('students')">
+                            <span class="icon">👥</span>
+                            <span>Все ученики</span>
+                        </a>
+                        <a class="quick-action-btn" onclick="showPage('groups')">
+                            <span class="icon">📋</span>
+                            <span>Все группы</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students page -->
+            <section id="studentsPage" class="page-section">
+                <div class="page-header">
+                    <h2>Ученики</h2>
+                </div>
+
+                <div class="card">
+                    <div class="search-bar">
+                        <input type="text" id="studentSearch" placeholder="Поиск по имени..." oninput="filterStudents()">
+                        <select id="studentGroupFilter" onchange="filterStudents()">
+                            <option value="">Все группы</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Имя</th>
+                                    <th>Группа</th>
+                                    <th>Дата добавления</th>
+                                    <th>Общий доход</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="studentsEmpty" class="empty-state hidden">
+                        <div class="icon">👥</div>
+                        <p>Нет учеников</p>
+                    </div>
+                </div>
+
+                <button class="fab" onclick="openStudentModal()">+</button>
+            </section>
+
+            <!-- Groups page -->
+            <section id="groupsPage" class="page-section">
+                <div class="page-header">
+                    <h2>Группы</h2>
+                </div>
+
+                <div id="groupsListView">
+                    <div class="search-bar">
+                        <input type="text" id="groupSearch" placeholder="Поиск группы..." oninput="filterGroups()">
+                    </div>
+                    <div class="groups-grid" id="groupsGrid"></div>
+                    <div id="groupsEmpty" class="empty-state hidden">
+                        <div class="icon">📁</div>
+                        <p>Нет групп</p>
+                    </div>
+                </div>
+
+                <div id="groupDetailView" class="hidden">
+                    <div class="group-detail-header">
+                        <button class="back-btn" onclick="closeGroupDetail()">←</button>
+                        <h3 class="group-detail-title" id="groupDetailTitle"></h3>
+                    </div>
+                    <div class="card">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Имя</th>
+                                        <th>Телефон</th>
+                                        <th>Оплата/мес</th>
+                                        <th>Занятий/мес</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupStudentsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="groupStudentsEmpty" class="empty-state hidden">
+                            <p>В группе нет учеников</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="fab" onclick="openGroupModal()">+</button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="studentModalTitle">Добавить ученика</h3>
+                <button class="modal-close" onclick="closeStudentModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="studentForm" onsubmit="saveStudent(event)">
+                    <input type="hidden" id="studentEditId">
                     <div class="form-group">
-                        <label>ФИО ученика</label>
-                        <input type="text" id="name" required placeholder="Иванов Иван">
+                        <label>ФИО ученика *</label>
+                        <input type="text" id="studentName" required placeholder="Иванов Иван">
                     </div>
-
                     <div class="form-group">
                         <label>Телефон</label>
-                        <input type="tel" id="phone" placeholder="+7 999 123-45-67">
+                        <input type="tel" id="studentPhone" placeholder="+7 999 123-45-67">
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Оплата в месяц (руб)</label>
-                            <input type="number" id="monthlyPayment" required min="0" placeholder="8000">
+                            <label>Оплата в месяц (руб) *</label>
+                            <input type="number" id="studentPayment" required min="0" placeholder="8000">
                         </div>
                         <div class="form-group">
-                            <label>Занятий в месяц</label>
-                            <input type="number" id="lessonsPerMonth" required min="1" placeholder="8">
+                            <label>Занятий в месяц *</label>
+                            <input type="number" id="studentLessons" required min="1" placeholder="8">
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Длительность занятия (мин)</label>
-                            <select id="lessonDuration">
+                            <label>Длительность (мин)</label>
+                            <select id="studentDuration">
                                 <option value="45">45 минут</option>
-                                <option value="60" selected>60 минут (1 час)</option>
-                                <option value="90">90 минут (1.5 часа)</option>
-                                <option value="120">120 минут (2 часа)</option>
+                                <option value="60" selected>60 минут</option>
+                                <option value="90">90 минут</option>
+                                <option value="120">120 минут</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Группа</label>
-                            <select id="studentGroup">
+                            <select id="studentGroupSelect">
                                 <option value="">Без группы</option>
                             </select>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Добавить</button>
-                    <button type="button" class="btn btn-secondary hidden" id="cancelBtn" onclick="cancelEdit()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
             </div>
+        </div>
+    </div>
 
-            <!-- Список учеников -->
-            <div class="card">
-                <h2>Список учеников</h2>
-                <div class="search-filter-row">
-                    <input type="text" id="searchInput" placeholder="Поиск по имени...">
-                    <select id="filterGroup">
-                        <option value="">Все группы</option>
-                    </select>
-                </div>
-                <div class="student-list" id="studentList">
-                    <div class="empty-state">Загрузка...</div>
-                </div>
+    <!-- Group Modal -->
+    <div class="modal-overlay" id="groupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="groupModalTitle">Добавить группу</h3>
+                <button class="modal-close" onclick="closeGroupModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="groupForm" onsubmit="saveGroup(event)">
+                    <input type="hidden" id="groupEditId">
+                    <div class="form-group">
+                        <label>Название группы *</label>
+                        <input type="text" id="groupName" required placeholder="Название группы">
+                    </div>
+                    <div class="form-group">
+                        <label>Цвет</label>
+                        <div class="color-picker" id="colorPicker">
+                            <div class="color-option selected" style="background: #667eea" data-color="#667eea"></div>
+                            <div class="color-option" style="background: #764ba2" data-color="#764ba2"></div>
+                            <div class="color-option" style="background: #2ed573" data-color="#2ed573"></div>
+                            <div class="color-option" style="background: #ffa502" data-color="#ffa502"></div>
+                            <div class="color-option" style="background: #ff4757" data-color="#ff4757"></div>
+                            <div class="color-option" style="background: #1e90ff" data-color="#1e90ff"></div>
+                            <div class="color-option" style="background: #ff6b81" data-color="#ff6b81"></div>
+                            <div class="color-option" style="background: #7bed9f" data-color="#7bed9f"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-        // Supabase конфигурация
+        // Supabase
         const SUPABASE_URL = 'https://uqqllcehzwgohlgwxfxh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWxsY2Voendnb2hsZ3d4ZnhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0MjI4MjIsImV4cCI6MjA4Mzk5ODgyMn0.9Ht0aejh0xD9v9FSRahvYIQQJ-_VMEb1FolbDUFBtxg';
-
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Данные
+        // State
         let students = [];
         let groups = [];
         let currentUser = null;
+        let selectedColor = '#667eea';
 
-        // DOM элементы
+        // DOM
         const loadingView = document.getElementById('loadingView');
         const authView = document.getElementById('authView');
         const appView = document.getElementById('appView');
-        const studentList = document.getElementById('studentList');
-        const searchInput = document.getElementById('searchInput');
-        const filterGroup = document.getElementById('filterGroup');
-        const form = document.getElementById('studentForm');
 
-        // Инициализация
+        // Init
         async function init() {
             try {
                 const { data: { session }, error } = await db.auth.getSession();
-
-                if (error) {
-                    console.error('Auth error:', error);
-                    showAuth();
-                    return;
-                }
-
                 if (session) {
                     currentUser = session.user;
                     showApp();
@@ -680,7 +1031,6 @@
                     showAuth();
                 }
 
-                // Слушаем изменения авторизации
                 db.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_IN' && session) {
                         currentUser = session.user;
@@ -692,357 +1042,443 @@
                 });
             } catch (err) {
                 console.error('Init error:', err);
-                loadingView.innerHTML = '<p style="color: white;">Ошибка подключения: ' + err.message + '</p>';
+                showAuth();
             }
         }
 
-        // Показать экран авторизации
         function showAuth() {
             loadingView.classList.add('hidden');
             authView.classList.remove('hidden');
             appView.classList.add('hidden');
         }
 
-        // Показать приложение
         async function showApp() {
             loadingView.classList.add('hidden');
             authView.classList.add('hidden');
             appView.classList.remove('hidden');
-
             document.getElementById('userEmail').textContent = currentUser.email;
-            await loadGroups();
-            await loadStudents();
+            await loadData();
         }
 
-        // Переключение табов авторизации
-        function showAuthTab(tab) {
-            const tabs = document.querySelectorAll('.auth-tab');
-            tabs.forEach(t => t.classList.remove('active'));
+        async function loadData() {
+            await loadGroups();
+            await loadStudents();
+            updateStats();
+        }
 
+        // Auth
+        function showAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('authError').classList.add('hidden');
             document.getElementById('authSuccess').classList.add('hidden');
 
             if (tab === 'login') {
-                tabs[0].classList.add('active');
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
                 document.getElementById('loginForm').classList.remove('hidden');
                 document.getElementById('registerForm').classList.add('hidden');
             } else {
-                tabs[1].classList.add('active');
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
                 document.getElementById('loginForm').classList.add('hidden');
                 document.getElementById('registerForm').classList.remove('hidden');
             }
         }
 
-        // Показать ошибку
-        function showError(message) {
+        function showError(msg) {
             const el = document.getElementById('authError');
-            el.textContent = message;
+            el.textContent = msg;
             el.classList.remove('hidden');
-            document.getElementById('authSuccess').classList.add('hidden');
         }
 
-        // Показать успех
-        function showSuccess(message) {
+        function showSuccess(msg) {
             const el = document.getElementById('authSuccess');
-            el.textContent = message;
+            el.textContent = msg;
             el.classList.remove('hidden');
-            document.getElementById('authError').classList.add('hidden');
         }
 
-        // Вход
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
             btn.textContent = 'Вход...';
 
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            const { error } = await db.auth.signInWithPassword({ email, password });
+            const { error } = await db.auth.signInWithPassword({
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            });
 
             if (error) {
-                showError(error.message === 'Invalid login credentials'
-                    ? 'Неверный email или пароль'
-                    : error.message);
+                showError(error.message === 'Invalid login credentials' ? 'Неверный email или пароль' : error.message);
                 btn.disabled = false;
                 btn.textContent = 'Войти';
             }
         }
 
-        // Регистрация
         async function handleRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('registerBtn');
             btn.disabled = true;
-            btn.textContent = 'Регистрация...';
 
-            const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
-
-            if (password !== passwordConfirm) {
+            if (password !== document.getElementById('registerPasswordConfirm').value) {
                 showError('Пароли не совпадают');
                 btn.disabled = false;
-                btn.textContent = 'Зарегистрироваться';
                 return;
             }
 
-            const { error } = await db.auth.signUp({ email, password });
+            const { error } = await db.auth.signUp({
+                email: document.getElementById('registerEmail').value,
+                password
+            });
 
             if (error) {
                 showError(error.message);
             } else {
-                showSuccess('Проверьте email для подтверждения регистрации!');
+                showSuccess('Проверьте email для подтверждения!');
                 document.getElementById('registerForm').reset();
             }
-
             btn.disabled = false;
-            btn.textContent = 'Зарегистрироваться';
         }
 
-        // Выход
         async function handleLogout() {
             await db.auth.signOut();
         }
 
-        // ===== ГРУППЫ =====
-
-        // Загрузка групп
-        async function loadGroups() {
-            const { data, error } = await db
-                .from('groups')
-                .select('*')
-                .order('created_at', { ascending: true });
-
-            if (error) {
-                console.error('Error loading groups:', error);
-                return;
-            }
-
-            groups = data || [];
-            renderGroups();
-            updateGroupSelects();
+        // Sidebar
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.overlay').classList.toggle('open');
         }
 
-        // Отрисовка групп
-        function renderGroups() {
-            const container = document.getElementById('groupsList');
+        // Navigation
+        function showPage(page) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
 
-            if (groups.length === 0) {
-                container.innerHTML = '<div class="empty-state">Нет групп. Создайте первую!</div>';
+            document.getElementById(page + 'Page').classList.add('active');
+            document.querySelector(`.sidebar-nav a[onclick="showPage('${page}')"]`).classList.add('active');
+
+            // Close sidebar on mobile
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.overlay').classList.remove('open');
+
+            // Reset group detail view
+            if (page === 'groups') {
+                closeGroupDetail();
+            }
+        }
+
+        // Groups
+        async function loadGroups() {
+            const { data, error } = await db.from('groups').select('*').order('created_at');
+            if (!error) {
+                groups = data || [];
+                renderGroups();
+                updateGroupSelects();
+            }
+        }
+
+        function renderGroups() {
+            const grid = document.getElementById('groupsGrid');
+            const empty = document.getElementById('groupsEmpty');
+            const search = document.getElementById('groupSearch').value.toLowerCase();
+
+            const filtered = groups.filter(g => g.name.toLowerCase().includes(search));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
                 return;
             }
 
-            container.innerHTML = groups.map(group => {
-                const count = students.filter(s => s.group_id === group.id).length;
+            empty.classList.add('hidden');
+            grid.innerHTML = filtered.map(g => {
+                const count = students.filter(s => s.group_id === g.id).length;
                 return `
-                    <div class="group-item" style="background: ${group.color}">
-                        <span class="group-item-name">${escapeHtml(group.name)}</span>
-                        <span class="group-item-count">${count}</span>
-                        <div class="group-item-actions">
-                            <button class="group-item-btn" onclick="editGroup('${group.id}')" title="Редактировать">✎</button>
-                            <button class="group-item-btn" onclick="deleteGroup('${group.id}')" title="Удалить">×</button>
+                    <div class="group-card" style="border-left-color: ${g.color}" onclick="openGroupDetail('${g.id}')">
+                        <div class="group-card-header">
+                            <div>
+                                <div class="group-card-name">${escapeHtml(g.name)}</div>
+                                <div class="group-card-count">${count} учеников</div>
+                            </div>
+                            <div class="group-card-actions" onclick="event.stopPropagation()">
+                                <button class="btn-icon edit" onclick="editGroup('${g.id}')">✎</button>
+                                <button class="btn-icon delete" onclick="deleteGroup('${g.id}')">×</button>
+                            </div>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        // Обновить выпадающие списки групп
-        function updateGroupSelects() {
-            const studentGroupSelect = document.getElementById('studentGroup');
-            const filterGroupSelect = document.getElementById('filterGroup');
+        function filterGroups() {
+            renderGroups();
+        }
 
+        function updateGroupSelects() {
             const options = '<option value="">Без группы</option>' +
                 groups.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
-
             const filterOptions = '<option value="">Все группы</option>' +
                 '<option value="none">Без группы</option>' +
                 groups.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
 
-            studentGroupSelect.innerHTML = options;
-            filterGroupSelect.innerHTML = filterOptions;
+            document.getElementById('studentGroupSelect').innerHTML = options;
+            document.getElementById('studentGroupFilter').innerHTML = filterOptions;
         }
 
-        // Показать/скрыть форму группы
-        function toggleGroupForm() {
-            const form = document.getElementById('addGroupForm');
-            form.classList.toggle('hidden');
-            if (!form.classList.contains('hidden')) {
-                document.getElementById('groupName').focus();
-            } else {
-                document.getElementById('groupName').value = '';
-                document.getElementById('groupColor').value = '#667eea';
-                document.getElementById('editGroupId').value = '';
+        function openGroupModal(id = null) {
+            const modal = document.getElementById('groupModal');
+            const form = document.getElementById('groupForm');
+
+            form.reset();
+            document.getElementById('groupEditId').value = '';
+            document.getElementById('groupModalTitle').textContent = 'Добавить группу';
+            selectColor('#667eea');
+
+            if (id) {
+                const group = groups.find(g => g.id === id);
+                if (group) {
+                    document.getElementById('groupEditId').value = group.id;
+                    document.getElementById('groupName').value = group.name;
+                    document.getElementById('groupModalTitle').textContent = 'Редактировать группу';
+                    selectColor(group.color);
+                }
             }
+
+            modal.classList.add('open');
         }
 
-        // Сохранить группу
-        async function saveGroup() {
-            const name = document.getElementById('groupName').value.trim();
-            const color = document.getElementById('groupColor').value;
-            const editId = document.getElementById('editGroupId').value;
+        function closeGroupModal() {
+            document.getElementById('groupModal').classList.remove('open');
+        }
 
-            if (!name) return;
+        function selectColor(color) {
+            selectedColor = color;
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.color === color);
+            });
+        }
+
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.addEventListener('click', () => selectColor(opt.dataset.color));
+        });
+
+        async function saveGroup(e) {
+            e.preventDefault();
+            const editId = document.getElementById('groupEditId').value;
+            const data = {
+                name: document.getElementById('groupName').value.trim(),
+                color: selectedColor
+            };
 
             if (editId) {
-                const { error } = await db
-                    .from('groups')
-                    .update({ name, color })
-                    .eq('id', editId);
-
-                if (error) {
-                    alert('Ошибка сохранения: ' + error.message);
-                    return;
-                }
+                await db.from('groups').update(data).eq('id', editId);
             } else {
-                const { error } = await db
-                    .from('groups')
-                    .insert([{ name, color, user_id: currentUser.id }]);
-
-                if (error) {
-                    alert('Ошибка создания: ' + error.message);
-                    return;
-                }
+                data.user_id = currentUser.id;
+                await db.from('groups').insert([data]);
             }
 
-            toggleGroupForm();
+            closeGroupModal();
             await loadGroups();
-            renderStudents(searchInput.value, filterGroup.value);
+            renderStudents();
         }
 
-        // Редактировать группу
         function editGroup(id) {
-            const group = groups.find(g => g.id === id);
-            if (!group) return;
-
-            document.getElementById('editGroupId').value = group.id;
-            document.getElementById('groupName').value = group.name;
-            document.getElementById('groupColor').value = group.color;
-            document.getElementById('addGroupForm').classList.remove('hidden');
-            document.getElementById('groupName').focus();
+            openGroupModal(id);
         }
 
-        // Удалить группу
         async function deleteGroup(id) {
-            const group = groups.find(g => g.id === id);
-            if (!group) return;
-
-            if (!confirm(`Удалить группу "${group.name}"? Ученики останутся без группы.`)) return;
-
-            const { error } = await db
-                .from('groups')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                alert('Ошибка удаления: ' + error.message);
-                return;
-            }
-
+            if (!confirm('Удалить группу?')) return;
+            await db.from('groups').delete().eq('id', id);
             await loadGroups();
             await loadStudents();
         }
 
-        // ===== УЧЕНИКИ =====
+        function openGroupDetail(id) {
+            const group = groups.find(g => g.id === id);
+            if (!group) return;
 
-        // Загрузка учеников
-        async function loadStudents() {
-            const { data, error } = await db
-                .from('students')
-                .select('*')
-                .order('created_at', { ascending: false });
+            document.getElementById('groupDetailTitle').textContent = group.name;
+            document.getElementById('groupsListView').classList.add('hidden');
+            document.getElementById('groupDetailView').classList.remove('hidden');
 
-            if (error) {
-                console.error('Error loading students:', error);
-                return;
+            const groupStudents = students.filter(s => s.group_id === id);
+            const tbody = document.getElementById('groupStudentsBody');
+            const empty = document.getElementById('groupStudentsEmpty');
+
+            if (groupStudents.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                tbody.innerHTML = groupStudents.map(s => `
+                    <tr>
+                        <td>${escapeHtml(s.name)}</td>
+                        <td>${s.phone || '-'}</td>
+                        <td>${s.monthly_payment.toLocaleString('ru-RU')} ₽</td>
+                        <td>${s.lessons_per_month}</td>
+                    </tr>
+                `).join('');
             }
-
-            students = data || [];
-            renderStudents(searchInput.value, filterGroup.value);
-            renderGroups(); // Обновить счетчики
-            updateSummary();
         }
 
-        // Расчет стоимости одного занятия
-        function calculateLessonPrice(monthlyPayment, lessonsPerMonth) {
-            if (lessonsPerMonth <= 0) return 0;
-            return Math.round(monthlyPayment / lessonsPerMonth);
+        function closeGroupDetail() {
+            document.getElementById('groupsListView').classList.remove('hidden');
+            document.getElementById('groupDetailView').classList.add('hidden');
         }
 
-        // Обновление статистики
-        function updateSummary() {
-            const totalStudents = students.length;
-            const totalLessons = students.reduce((sum, s) => sum + s.lessons_per_month, 0);
-            const totalIncome = students.reduce((sum, s) => sum + s.monthly_payment, 0);
-
-            document.getElementById('totalStudents').textContent = totalStudents;
-            document.getElementById('totalLessons').textContent = totalLessons;
-            document.getElementById('totalIncome').textContent = totalIncome.toLocaleString('ru-RU');
+        // Students
+        async function loadStudents() {
+            const { data, error } = await db.from('students').select('*').order('created_at', { ascending: false });
+            if (!error) {
+                students = data || [];
+                renderStudents();
+                renderGroups();
+            }
         }
 
-        // Получить группу по ID
-        function getGroup(groupId) {
-            return groups.find(g => g.id === groupId);
-        }
+        function renderStudents() {
+            const tbody = document.getElementById('studentsTableBody');
+            const empty = document.getElementById('studentsEmpty');
+            const search = document.getElementById('studentSearch').value.toLowerCase();
+            const groupFilter = document.getElementById('studentGroupFilter').value;
 
-        // Отрисовка списка учеников
-        function renderStudents(filter = '', groupFilter = '') {
             let filtered = students;
-
-            // Фильтр по группе
             if (groupFilter === 'none') {
                 filtered = filtered.filter(s => !s.group_id);
             } else if (groupFilter) {
                 filtered = filtered.filter(s => s.group_id === groupFilter);
             }
-
-            // Поиск по тексту
-            if (filter) {
-                filtered = filtered.filter(s =>
-                    s.name.toLowerCase().includes(filter.toLowerCase())
-                );
+            if (search) {
+                filtered = filtered.filter(s => s.name.toLowerCase().includes(search));
             }
 
             if (filtered.length === 0) {
-                studentList.innerHTML = '<div class="empty-state">' +
-                    (filter || groupFilter ? 'Ничего не найдено' : 'Список пуст. Добавьте первого ученика!') +
-                    '</div>';
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
                 return;
             }
 
-            studentList.innerHTML = filtered.map(student => {
-                const lessonPrice = calculateLessonPrice(student.monthly_payment, student.lessons_per_month);
-                const group = getGroup(student.group_id);
+            empty.classList.add('hidden');
+            tbody.innerHTML = filtered.map(s => {
+                const group = groups.find(g => g.id === s.group_id);
                 const groupBadge = group
-                    ? `<span class="student-group-badge" style="background: ${group.color}">${escapeHtml(group.name)}</span>`
-                    : '';
+                    ? `<span class="group-badge" style="background: ${group.color}">${escapeHtml(group.name)}</span>`
+                    : '<span style="color: #999">—</span>';
+
+                const createdAt = new Date(s.created_at).toLocaleDateString('ru-RU');
+                const totalIncome = calculateTotalIncome(s);
 
                 return `
-                    <div class="student-item" style="border-left-color: ${group ? group.color : '#667eea'}">
-                        <div class="student-header">
-                            <div>
-                                <div class="student-name">${escapeHtml(student.name)}</div>
+                    <tr>
+                        <td><strong>${escapeHtml(s.name)}</strong></td>
+                        <td>${groupBadge}</td>
+                        <td>${createdAt}</td>
+                        <td>${totalIncome.toLocaleString('ru-RU')} ₽</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn-icon edit" onclick="editStudent('${s.id}')">✎</button>
+                                <button class="btn-icon delete" onclick="deleteStudent('${s.id}')">×</button>
                             </div>
-                            ${groupBadge}
-                        </div>
-                        <div class="student-details">
-                            <span>${student.phone || 'Нет телефона'}</span>
-                            <span>${student.lessons_per_month} зан/мес × ${student.lesson_duration} мин</span>
-                            <span>${student.monthly_payment.toLocaleString('ru-RU')} руб/мес</span>
-                            <span class="price-highlight">${lessonPrice.toLocaleString('ru-RU')} руб/занятие</span>
-                        </div>
-                        <div class="student-actions">
-                            <button class="btn btn-edit" onclick="editStudent('${student.id}')">Изменить</button>
-                            <button class="btn btn-danger" onclick="deleteStudent('${student.id}')">Удалить</button>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
-        // Защита от XSS
+        function filterStudents() {
+            renderStudents();
+        }
+
+        function calculateTotalIncome(student) {
+            const created = new Date(student.created_at);
+            const now = new Date();
+            const months = Math.max(1, Math.ceil((now - created) / (1000 * 60 * 60 * 24 * 30)));
+            return student.monthly_payment * months;
+        }
+
+        function openStudentModal(id = null) {
+            const modal = document.getElementById('studentModal');
+            const form = document.getElementById('studentForm');
+
+            form.reset();
+            document.getElementById('studentEditId').value = '';
+            document.getElementById('studentModalTitle').textContent = 'Добавить ученика';
+            document.getElementById('studentDuration').value = '60';
+            document.getElementById('studentGroupSelect').value = '';
+
+            if (id) {
+                const student = students.find(s => s.id === id);
+                if (student) {
+                    document.getElementById('studentEditId').value = student.id;
+                    document.getElementById('studentName').value = student.name;
+                    document.getElementById('studentPhone').value = student.phone || '';
+                    document.getElementById('studentPayment').value = student.monthly_payment;
+                    document.getElementById('studentLessons').value = student.lessons_per_month;
+                    document.getElementById('studentDuration').value = student.lesson_duration;
+                    document.getElementById('studentGroupSelect').value = student.group_id || '';
+                    document.getElementById('studentModalTitle').textContent = 'Редактировать ученика';
+                }
+            }
+
+            modal.classList.add('open');
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.remove('open');
+        }
+
+        async function saveStudent(e) {
+            e.preventDefault();
+            const editId = document.getElementById('studentEditId').value;
+            const groupId = document.getElementById('studentGroupSelect').value;
+
+            const data = {
+                name: document.getElementById('studentName').value.trim(),
+                phone: document.getElementById('studentPhone').value.trim(),
+                monthly_payment: parseInt(document.getElementById('studentPayment').value),
+                lessons_per_month: parseInt(document.getElementById('studentLessons').value),
+                lesson_duration: parseInt(document.getElementById('studentDuration').value),
+                group_id: groupId || null
+            };
+
+            if (editId) {
+                await db.from('students').update(data).eq('id', editId);
+            } else {
+                data.user_id = currentUser.id;
+                await db.from('students').insert([data]);
+            }
+
+            closeStudentModal();
+            await loadStudents();
+            updateStats();
+        }
+
+        function editStudent(id) {
+            openStudentModal(id);
+        }
+
+        async function deleteStudent(id) {
+            if (!confirm('Удалить ученика?')) return;
+            await db.from('students').delete().eq('id', id);
+            await loadStudents();
+            updateStats();
+        }
+
+        // Stats
+        function updateStats() {
+            const totalStudents = students.length;
+            const lessonsPerMonth = students.reduce((sum, s) => sum + s.lessons_per_month, 0);
+            const lessonsPerWeek = Math.round(lessonsPerMonth / 4);
+            const incomePerMonth = students.reduce((sum, s) => sum + s.monthly_payment, 0);
+            const incomePerWeek = Math.round(incomePerMonth / 4);
+
+            document.getElementById('statStudents').textContent = totalStudents;
+            document.getElementById('statLessonsWeek').textContent = lessonsPerWeek;
+            document.getElementById('statIncomeWeek').textContent = incomePerWeek.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('statIncomeMonth').textContent = incomePerMonth.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        // Utils
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -1050,124 +1486,7 @@
             return div.innerHTML;
         }
 
-        // Добавление/редактирование ученика
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-
-            const groupId = document.getElementById('studentGroup').value;
-
-            const studentData = {
-                name: document.getElementById('name').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                monthly_payment: parseInt(document.getElementById('monthlyPayment').value),
-                lessons_per_month: parseInt(document.getElementById('lessonsPerMonth').value),
-                lesson_duration: parseInt(document.getElementById('lessonDuration').value),
-                group_id: groupId || null
-            };
-
-            const editId = document.getElementById('editId').value;
-
-            if (editId) {
-                // Редактирование
-                const { error } = await db
-                    .from('students')
-                    .update(studentData)
-                    .eq('id', editId);
-
-                if (error) {
-                    alert('Ошибка сохранения: ' + error.message);
-                    submitBtn.disabled = false;
-                    return;
-                }
-                cancelEdit();
-            } else {
-                // Добавление
-                studentData.user_id = currentUser.id;
-
-                const { error } = await db
-                    .from('students')
-                    .insert([studentData]);
-
-                if (error) {
-                    alert('Ошибка добавления: ' + error.message);
-                    submitBtn.disabled = false;
-                    return;
-                }
-            }
-
-            form.reset();
-            document.getElementById('lessonDuration').value = '60';
-            document.getElementById('studentGroup').value = '';
-            submitBtn.disabled = false;
-
-            await loadStudents();
-        });
-
-        // Редактирование ученика
-        function editStudent(id) {
-            const student = students.find(s => s.id === id);
-            if (!student) return;
-
-            document.getElementById('editId').value = student.id;
-            document.getElementById('name').value = student.name;
-            document.getElementById('phone').value = student.phone || '';
-            document.getElementById('monthlyPayment').value = student.monthly_payment;
-            document.getElementById('lessonsPerMonth').value = student.lessons_per_month;
-            document.getElementById('lessonDuration').value = student.lesson_duration;
-            document.getElementById('studentGroup').value = student.group_id || '';
-
-            document.getElementById('formTitle').textContent = 'Редактирование';
-            document.getElementById('submitBtn').textContent = 'Сохранить';
-            document.getElementById('cancelBtn').classList.remove('hidden');
-
-            form.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Отмена редактирования
-        function cancelEdit() {
-            document.getElementById('editId').value = '';
-            form.reset();
-            document.getElementById('lessonDuration').value = '60';
-            document.getElementById('studentGroup').value = '';
-            document.getElementById('formTitle').textContent = 'Добавить ученика';
-            document.getElementById('submitBtn').textContent = 'Добавить';
-            document.getElementById('cancelBtn').classList.add('hidden');
-        }
-
-        // Удаление ученика
-        async function deleteStudent(id) {
-            if (!confirm('Удалить этого ученика?')) return;
-
-            const { error } = await db
-                .from('students')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                alert('Ошибка удаления: ' + error.message);
-                return;
-            }
-
-            if (document.getElementById('editId').value === id) {
-                cancelEdit();
-            }
-
-            await loadStudents();
-        }
-
-        // Поиск и фильтрация
-        searchInput.addEventListener('input', function() {
-            renderStudents(this.value, filterGroup.value);
-        });
-
-        filterGroup.addEventListener('change', function() {
-            renderStudents(searchInput.value, this.value);
-        });
-
-        // Запуск
+        // Start
         init();
     </script>
 </body>
