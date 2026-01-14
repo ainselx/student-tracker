@@ -507,25 +507,36 @@
 
         // Инициализация
         async function init() {
-            const { data: { session } } = await supabase.auth.getSession();
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
 
-            if (session) {
-                currentUser = session.user;
-                showApp();
-            } else {
-                showAuth();
-            }
+                if (error) {
+                    console.error('Auth error:', error);
+                    showAuth();
+                    return;
+                }
 
-            // Слушаем изменения авторизации
-            supabase.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_IN' && session) {
+                if (session) {
                     currentUser = session.user;
                     showApp();
-                } else if (event === 'SIGNED_OUT') {
-                    currentUser = null;
+                } else {
                     showAuth();
                 }
-            });
+
+                // Слушаем изменения авторизации
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' && session) {
+                        currentUser = session.user;
+                        showApp();
+                    } else if (event === 'SIGNED_OUT') {
+                        currentUser = null;
+                        showAuth();
+                    }
+                });
+            } catch (err) {
+                console.error('Init error:', err);
+                loadingView.innerHTML = '<p style="color: white;">Ошибка подключения: ' + err.message + '</p>';
+            }
         }
 
         // Показать экран авторизации
