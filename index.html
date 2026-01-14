@@ -491,7 +491,7 @@
         const SUPABASE_URL = 'https://uqqllcehzwgohlgwxfxh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcWxsY2Voendnb2hsZ3d4ZnhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0MjI4MjIsImV4cCI6MjA4Mzk5ODgyMn0.9Ht0aejh0xD9v9FSRahvYIQQJ-_VMEb1FolbDUFBtxg';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Данные
         let students = [];
@@ -508,7 +508,7 @@
         // Инициализация
         async function init() {
             try {
-                const { data: { session }, error } = await supabase.auth.getSession();
+                const { data: { session }, error } = await db.auth.getSession();
 
                 if (error) {
                     console.error('Auth error:', error);
@@ -524,7 +524,7 @@
                 }
 
                 // Слушаем изменения авторизации
-                supabase.auth.onAuthStateChange((event, session) => {
+                db.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_IN' && session) {
                         currentUser = session.user;
                         showApp();
@@ -601,7 +601,7 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await db.auth.signInWithPassword({ email, password });
 
             if (error) {
                 showError(error.message === 'Invalid login credentials'
@@ -630,7 +630,7 @@
                 return;
             }
 
-            const { error } = await supabase.auth.signUp({ email, password });
+            const { error } = await db.auth.signUp({ email, password });
 
             if (error) {
                 showError(error.message);
@@ -645,12 +645,12 @@
 
         // Выход
         async function handleLogout() {
-            await supabase.auth.signOut();
+            await db.auth.signOut();
         }
 
         // Загрузка учеников
         async function loadStudents() {
-            const { data, error } = await supabase
+            const { data, error } = await db
                 .from('students')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -745,7 +745,7 @@
 
             if (editId) {
                 // Редактирование
-                const { error } = await supabase
+                const { error } = await db
                     .from('students')
                     .update(studentData)
                     .eq('id', editId);
@@ -760,7 +760,7 @@
                 // Добавление
                 studentData.user_id = currentUser.id;
 
-                const { error } = await supabase
+                const { error } = await db
                     .from('students')
                     .insert([studentData]);
 
@@ -812,7 +812,7 @@
         async function deleteStudent(id) {
             if (!confirm('Удалить этого ученика?')) return;
 
-            const { error } = await supabase
+            const { error } = await db
                 .from('students')
                 .delete()
                 .eq('id', id);
