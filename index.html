@@ -213,6 +213,7 @@
             justify-content: center;
             font-size: 1.5rem;
             margin-bottom: 15px;
+            flex-shrink: 0;
         }
 
         .stat-card .stat-value {
@@ -231,6 +232,28 @@
         .stat-icon.green { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
         .stat-icon.orange { background: rgba(255, 165, 2, 0.15); color: #ffa502; }
         .stat-icon.blue { background: rgba(30, 144, 255, 0.15); color: #1e90ff; }
+
+        @media (max-width: 768px) {
+            .stat-card {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 16px;
+            }
+            .stat-card .stat-icon {
+                margin-bottom: 0;
+            }
+            .stat-card .stat-content {
+                flex: 1;
+            }
+            .stat-card .stat-value {
+                font-size: 1.5rem;
+            }
+            .stat-card .stat-label {
+                margin-top: 2px;
+                font-size: 0.8rem;
+            }
+        }
 
         /* Quick actions */
         .quick-actions {
@@ -790,23 +813,31 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon purple">👥</div>
-                        <div class="stat-value" id="statStudents">0</div>
-                        <div class="stat-label">Всего учеников</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="statStudents">0</div>
+                            <div class="stat-label">Всего учеников</div>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon green">📅</div>
-                        <div class="stat-value" id="statLessonsWeek">0</div>
-                        <div class="stat-label">Занятий в неделю</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="statLessonsWeek">0</div>
+                            <div class="stat-label">Занятий в неделю</div>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon orange">💰</div>
-                        <div class="stat-value" id="statIncomeWeek">0</div>
-                        <div class="stat-label">Доход в неделю</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="statIncomeWeek">0</div>
+                            <div class="stat-label">Доход в неделю</div>
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon blue">📊</div>
-                        <div class="stat-value" id="statIncomeMonth">0</div>
-                        <div class="stat-label">Доход в месяц</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="statIncomeMonth">0</div>
+                            <div class="stat-label">Доход в месяц</div>
+                        </div>
                     </div>
                 </div>
 
