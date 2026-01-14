@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Учет учеников</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -23,11 +24,41 @@
             margin: 0 auto;
         }
 
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
         h1 {
             color: white;
-            text-align: center;
-            margin-bottom: 20px;
             font-size: 1.8rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-email {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.85rem;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .card {
@@ -79,6 +110,11 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
         }
 
         .btn {
@@ -96,13 +132,24 @@
             transform: scale(0.98);
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+            margin-top: 10px;
         }
 
         .btn-danger {
@@ -110,6 +157,7 @@
             color: white;
             padding: 8px 12px;
             font-size: 0.85rem;
+            width: auto;
         }
 
         .btn-edit {
@@ -117,7 +165,7 @@
             color: white;
             padding: 8px 12px;
             font-size: 0.85rem;
-            margin-right: 5px;
+            width: auto;
         }
 
         .student-list {
@@ -219,108 +267,391 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
+        }
+
+        /* Auth styles */
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .auth-tab:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .auth-tab:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .auth-tab.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .error-message {
+            background: #ffe0e0;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Учет учеников</h1>
+        <!-- Loading -->
+        <div id="loadingView" class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px;">Загрузка...</p>
+        </div>
 
-        <!-- Статистика -->
-        <div class="card">
-            <div class="summary">
-                <div class="summary-item">
-                    <div class="summary-value" id="totalStudents">0</div>
-                    <div class="summary-label">Учеников</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-value" id="totalLessons">0</div>
-                    <div class="summary-label">Занятий/мес</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-value" id="totalIncome">0</div>
-                    <div class="summary-label">Доход/мес</div>
-                </div>
+        <!-- Auth View -->
+        <div id="authView" class="auth-container hidden">
+            <h1 style="text-align: center; margin-bottom: 20px;">Учет учеников</h1>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthTab('login')">Вход</button>
+                <button class="auth-tab" onclick="showAuthTab('register')">Регистрация</button>
+            </div>
+
+            <div class="card">
+                <div id="authError" class="error-message hidden"></div>
+                <div id="authSuccess" class="success-message hidden"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="loginPassword" required placeholder="Ваш пароль" minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="loginBtn">Войти</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="registerPassword" required placeholder="Минимум 6 символов" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Подтвердите пароль</label>
+                        <input type="password" id="registerPasswordConfirm" required placeholder="Повторите пароль" minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="registerBtn">Зарегистрироваться</button>
+                </form>
             </div>
         </div>
 
-        <!-- Форма добавления -->
-        <div class="card">
-            <h2 id="formTitle">Добавить ученика</h2>
-            <form id="studentForm">
-                <input type="hidden" id="editId">
-
-                <div class="form-group">
-                    <label>ФИО ученика</label>
-                    <input type="text" id="name" required placeholder="Иванов Иван">
+        <!-- App View -->
+        <div id="appView" class="hidden">
+            <header>
+                <h1>Учет учеников</h1>
+                <div class="user-info">
+                    <span class="user-email" id="userEmail"></span>
+                    <button class="btn-logout" onclick="handleLogout()">Выйти</button>
                 </div>
+            </header>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Телефон</label>
-                        <input type="tel" id="phone" placeholder="+7 999 123-45-67">
+            <!-- Статистика -->
+            <div class="card">
+                <div class="summary">
+                    <div class="summary-item">
+                        <div class="summary-value" id="totalStudents">0</div>
+                        <div class="summary-label">Учеников</div>
                     </div>
-                    <div class="form-group">
-                        <label>Предмет</label>
-                        <input type="text" id="subject" required placeholder="Математика">
+                    <div class="summary-item">
+                        <div class="summary-value" id="totalLessons">0</div>
+                        <div class="summary-label">Занятий/мес</div>
                     </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Оплата в месяц (руб)</label>
-                        <input type="number" id="monthlyPayment" required min="0" placeholder="8000">
-                    </div>
-                    <div class="form-group">
-                        <label>Занятий в месяц</label>
-                        <input type="number" id="lessonsPerMonth" required min="1" placeholder="8">
+                    <div class="summary-item">
+                        <div class="summary-value" id="totalIncome">0</div>
+                        <div class="summary-label">Доход/мес</div>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Длительность занятия (мин)</label>
-                    <select id="lessonDuration">
-                        <option value="45">45 минут</option>
-                        <option value="60" selected>60 минут (1 час)</option>
-                        <option value="90">90 минут (1.5 часа)</option>
-                        <option value="120">120 минут (2 часа)</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary" id="submitBtn">Добавить</button>
-                <button type="button" class="btn" id="cancelBtn" style="margin-top: 10px; background: #e0e0e0; display: none;">Отмена</button>
-            </form>
-        </div>
-
-        <!-- Список учеников -->
-        <div class="card">
-            <h2>Список учеников</h2>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Поиск по имени или предмету...">
             </div>
-            <div class="student-list" id="studentList">
-                <div class="empty-state">Список пуст. Добавьте первого ученика!</div>
+
+            <!-- Форма добавления -->
+            <div class="card">
+                <h2 id="formTitle">Добавить ученика</h2>
+                <form id="studentForm">
+                    <input type="hidden" id="editId">
+
+                    <div class="form-group">
+                        <label>ФИО ученика</label>
+                        <input type="text" id="name" required placeholder="Иванов Иван">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Телефон</label>
+                            <input type="tel" id="phone" placeholder="+7 999 123-45-67">
+                        </div>
+                        <div class="form-group">
+                            <label>Предмет</label>
+                            <input type="text" id="subject" required placeholder="Математика">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Оплата в месяц (руб)</label>
+                            <input type="number" id="monthlyPayment" required min="0" placeholder="8000">
+                        </div>
+                        <div class="form-group">
+                            <label>Занятий в месяц</label>
+                            <input type="number" id="lessonsPerMonth" required min="1" placeholder="8">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Длительность занятия (мин)</label>
+                        <select id="lessonDuration">
+                            <option value="45">45 минут</option>
+                            <option value="60" selected>60 минут (1 час)</option>
+                            <option value="90">90 минут (1.5 часа)</option>
+                            <option value="120">120 минут (2 часа)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Добавить</button>
+                    <button type="button" class="btn btn-secondary hidden" id="cancelBtn" onclick="cancelEdit()">Отмена</button>
+                </form>
+            </div>
+
+            <!-- Список учеников -->
+            <div class="card">
+                <h2>Список учеников</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Поиск по имени или предмету...">
+                </div>
+                <div class="student-list" id="studentList">
+                    <div class="empty-state">Загрузка...</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Данные учеников
-        let students = JSON.parse(localStorage.getItem('students')) || [];
+        // Supabase конфигурация
+        const SUPABASE_URL = 'https://uqqllcehzwgohlgwxfxh.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_yF3d-O6nbeIubgVkFsOxfw_yTqAexOD';
 
-        // Элементы DOM
-        const form = document.getElementById('studentForm');
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Данные
+        let students = [];
+        let currentUser = null;
+
+        // DOM элементы
+        const loadingView = document.getElementById('loadingView');
+        const authView = document.getElementById('authView');
+        const appView = document.getElementById('appView');
         const studentList = document.getElementById('studentList');
         const searchInput = document.getElementById('searchInput');
-        const formTitle = document.getElementById('formTitle');
-        const submitBtn = document.getElementById('submitBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const editIdInput = document.getElementById('editId');
+        const form = document.getElementById('studentForm');
 
-        // Сохранение в localStorage
-        function saveData() {
-            localStorage.setItem('students', JSON.stringify(students));
+        // Инициализация
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session) {
+                currentUser = session.user;
+                showApp();
+            } else {
+                showAuth();
+            }
+
+            // Слушаем изменения авторизации
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    currentUser = session.user;
+                    showApp();
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    showAuth();
+                }
+            });
+        }
+
+        // Показать экран авторизации
+        function showAuth() {
+            loadingView.classList.add('hidden');
+            authView.classList.remove('hidden');
+            appView.classList.add('hidden');
+        }
+
+        // Показать приложение
+        async function showApp() {
+            loadingView.classList.add('hidden');
+            authView.classList.add('hidden');
+            appView.classList.remove('hidden');
+
+            document.getElementById('userEmail').textContent = currentUser.email;
+            await loadStudents();
+        }
+
+        // Переключение табов авторизации
+        function showAuthTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+
+            document.getElementById('authError').classList.add('hidden');
+            document.getElementById('authSuccess').classList.add('hidden');
+
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            }
+        }
+
+        // Показать ошибку
+        function showError(message) {
+            const el = document.getElementById('authError');
+            el.textContent = message;
+            el.classList.remove('hidden');
+            document.getElementById('authSuccess').classList.add('hidden');
+        }
+
+        // Показать успех
+        function showSuccess(message) {
+            const el = document.getElementById('authSuccess');
+            el.textContent = message;
+            el.classList.remove('hidden');
+            document.getElementById('authError').classList.add('hidden');
+        }
+
+        // Вход
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Вход...';
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                showError(error.message === 'Invalid login credentials'
+                    ? 'Неверный email или пароль'
+                    : error.message);
+                btn.disabled = false;
+                btn.textContent = 'Войти';
+            }
+        }
+
+        // Регистрация
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById('registerBtn');
+            btn.disabled = true;
+            btn.textContent = 'Регистрация...';
+
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+            if (password !== passwordConfirm) {
+                showError('Пароли не совпадают');
+                btn.disabled = false;
+                btn.textContent = 'Зарегистрироваться';
+                return;
+            }
+
+            const { error } = await supabase.auth.signUp({ email, password });
+
+            if (error) {
+                showError(error.message);
+            } else {
+                showSuccess('Проверьте email для подтверждения регистрации!');
+                document.getElementById('registerForm').reset();
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Зарегистрироваться';
+        }
+
+        // Выход
+        async function handleLogout() {
+            await supabase.auth.signOut();
+        }
+
+        // Загрузка учеников
+        async function loadStudents() {
+            const { data, error } = await supabase
+                .from('students')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error loading students:', error);
+                return;
+            }
+
+            students = data || [];
+            renderStudents();
+            updateSummary();
         }
 
         // Расчет стоимости одного занятия
@@ -329,17 +660,11 @@
             return Math.round(monthlyPayment / lessonsPerMonth);
         }
 
-        // Расчет стоимости за час
-        function calculateHourlyRate(monthlyPayment, lessonsPerMonth, duration) {
-            const lessonPrice = calculateLessonPrice(monthlyPayment, lessonsPerMonth);
-            return Math.round(lessonPrice / duration * 60);
-        }
-
         // Обновление статистики
         function updateSummary() {
             const totalStudents = students.length;
-            const totalLessons = students.reduce((sum, s) => sum + s.lessonsPerMonth, 0);
-            const totalIncome = students.reduce((sum, s) => sum + s.monthlyPayment, 0);
+            const totalLessons = students.reduce((sum, s) => sum + s.lessons_per_month, 0);
+            const totalIncome = students.reduce((sum, s) => sum + s.monthly_payment, 0);
 
             document.getElementById('totalStudents').textContent = totalStudents;
             document.getElementById('totalLessons').textContent = totalLessons;
@@ -361,8 +686,7 @@
             }
 
             studentList.innerHTML = filtered.map(student => {
-                const lessonPrice = calculateLessonPrice(student.monthlyPayment, student.lessonsPerMonth);
-                const hourlyRate = calculateHourlyRate(student.monthlyPayment, student.lessonsPerMonth, student.lessonDuration);
+                const lessonPrice = calculateLessonPrice(student.monthly_payment, student.lessons_per_month);
 
                 return `
                     <div class="student-item">
@@ -370,8 +694,8 @@
                         <div class="student-subject">${escapeHtml(student.subject)}</div>
                         <div class="student-details">
                             <span>${student.phone || 'Нет телефона'}</span>
-                            <span>${student.lessonsPerMonth} зан/мес × ${student.lessonDuration} мин</span>
-                            <span>${student.monthlyPayment.toLocaleString('ru-RU')} руб/мес</span>
+                            <span>${student.lessons_per_month} зан/мес × ${student.lesson_duration} мин</span>
+                            <span>${student.monthly_payment.toLocaleString('ru-RU')} руб/мес</span>
                             <span class="price-highlight">${lessonPrice.toLocaleString('ru-RU')} руб/занятие</span>
                         </div>
                         <div class="student-actions">
@@ -390,42 +714,57 @@
             return div.innerHTML;
         }
 
-        // Генерация уникального ID
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
         // Добавление/редактирование ученика
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+
             const studentData = {
-                id: editIdInput.value || generateId(),
                 name: document.getElementById('name').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 subject: document.getElementById('subject').value.trim(),
-                monthlyPayment: parseInt(document.getElementById('monthlyPayment').value),
-                lessonsPerMonth: parseInt(document.getElementById('lessonsPerMonth').value),
-                lessonDuration: parseInt(document.getElementById('lessonDuration').value)
+                monthly_payment: parseInt(document.getElementById('monthlyPayment').value),
+                lessons_per_month: parseInt(document.getElementById('lessonsPerMonth').value),
+                lesson_duration: parseInt(document.getElementById('lessonDuration').value)
             };
 
-            if (editIdInput.value) {
+            const editId = document.getElementById('editId').value;
+
+            if (editId) {
                 // Редактирование
-                const index = students.findIndex(s => s.id === editIdInput.value);
-                if (index !== -1) {
-                    students[index] = studentData;
+                const { error } = await supabase
+                    .from('students')
+                    .update(studentData)
+                    .eq('id', editId);
+
+                if (error) {
+                    alert('Ошибка сохранения: ' + error.message);
+                    submitBtn.disabled = false;
+                    return;
                 }
                 cancelEdit();
             } else {
                 // Добавление
-                students.push(studentData);
+                studentData.user_id = currentUser.id;
+
+                const { error } = await supabase
+                    .from('students')
+                    .insert([studentData]);
+
+                if (error) {
+                    alert('Ошибка добавления: ' + error.message);
+                    submitBtn.disabled = false;
+                    return;
+                }
             }
 
-            saveData();
-            renderStudents(searchInput.value);
-            updateSummary();
             form.reset();
             document.getElementById('lessonDuration').value = '60';
+            submitBtn.disabled = false;
+
+            await loadStudents();
         });
 
         // Редактирование ученика
@@ -433,46 +772,50 @@
             const student = students.find(s => s.id === id);
             if (!student) return;
 
-            editIdInput.value = student.id;
+            document.getElementById('editId').value = student.id;
             document.getElementById('name').value = student.name;
-            document.getElementById('phone').value = student.phone;
+            document.getElementById('phone').value = student.phone || '';
             document.getElementById('subject').value = student.subject;
-            document.getElementById('monthlyPayment').value = student.monthlyPayment;
-            document.getElementById('lessonsPerMonth').value = student.lessonsPerMonth;
-            document.getElementById('lessonDuration').value = student.lessonDuration;
+            document.getElementById('monthlyPayment').value = student.monthly_payment;
+            document.getElementById('lessonsPerMonth').value = student.lessons_per_month;
+            document.getElementById('lessonDuration').value = student.lesson_duration;
 
-            formTitle.textContent = 'Редактирование';
-            submitBtn.textContent = 'Сохранить';
-            cancelBtn.style.display = 'block';
+            document.getElementById('formTitle').textContent = 'Редактирование';
+            document.getElementById('submitBtn').textContent = 'Сохранить';
+            document.getElementById('cancelBtn').classList.remove('hidden');
 
-            // Прокрутка к форме
             form.scrollIntoView({ behavior: 'smooth' });
         }
 
         // Отмена редактирования
         function cancelEdit() {
-            editIdInput.value = '';
+            document.getElementById('editId').value = '';
             form.reset();
             document.getElementById('lessonDuration').value = '60';
-            formTitle.textContent = 'Добавить ученика';
-            submitBtn.textContent = 'Добавить';
-            cancelBtn.style.display = 'none';
+            document.getElementById('formTitle').textContent = 'Добавить ученика';
+            document.getElementById('submitBtn').textContent = 'Добавить';
+            document.getElementById('cancelBtn').classList.add('hidden');
         }
 
-        cancelBtn.addEventListener('click', cancelEdit);
-
         // Удаление ученика
-        function deleteStudent(id) {
-            if (confirm('Удалить этого ученика?')) {
-                students = students.filter(s => s.id !== id);
-                saveData();
-                renderStudents(searchInput.value);
-                updateSummary();
+        async function deleteStudent(id) {
+            if (!confirm('Удалить этого ученика?')) return;
 
-                if (editIdInput.value === id) {
-                    cancelEdit();
-                }
+            const { error } = await supabase
+                .from('students')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert('Ошибка удаления: ' + error.message);
+                return;
             }
+
+            if (document.getElementById('editId').value === id) {
+                cancelEdit();
+            }
+
+            await loadStudents();
         }
 
         // Поиск
@@ -480,9 +823,8 @@
             renderStudents(this.value);
         });
 
-        // Инициализация
-        renderStudents();
-        updateSummary();
+        // Запуск
+        init();
     </script>
 </body>
 </html>
