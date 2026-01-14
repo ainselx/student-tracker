@@ -73,6 +73,9 @@
             color: #333;
             margin-bottom: 15px;
             font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .form-group {
@@ -168,6 +171,12 @@
             width: auto;
         }
 
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            width: auto;
+        }
+
         .student-list {
             margin-top: 10px;
         }
@@ -180,6 +189,12 @@
             border-left: 4px solid #667eea;
         }
 
+        .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
         .student-name {
             font-weight: 600;
             color: #333;
@@ -190,6 +205,14 @@
             color: #667eea;
             font-size: 0.9rem;
             margin-top: 3px;
+        }
+
+        .student-group-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
         }
 
         .student-details {
@@ -262,8 +285,28 @@
             margin-top: 5px;
         }
 
-        .search-box {
+        .search-filter-row {
+            display: flex;
+            gap: 10px;
             margin-bottom: 15px;
+        }
+
+        .search-filter-row input {
+            flex: 1;
+        }
+
+        .search-filter-row select {
+            width: 150px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 500px) {
+            .search-filter-row {
+                flex-direction: column;
+            }
+            .search-filter-row select {
+                width: 100%;
+            }
         }
 
         .hidden {
@@ -341,6 +384,102 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Groups styles */
+        .groups-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .group-item-name {
+            font-weight: 500;
+        }
+
+        .group-item-count {
+            background: rgba(255,255,255,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        .group-item-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .group-item-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .group-item-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .add-group-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-group-form input[type="text"] {
+            flex: 1;
+        }
+
+        .add-group-form input[type="color"] {
+            width: 50px;
+            padding: 5px;
+            height: 44px;
+        }
+
+        .add-group-form button {
+            width: auto;
+            padding: 12px 20px;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: #333;
         }
     </style>
 </head>
@@ -425,6 +564,23 @@
                 </div>
             </div>
 
+            <!-- Группы -->
+            <div class="card">
+                <h2>
+                    Группы
+                    <button class="btn btn-primary btn-small" onclick="toggleGroupForm()">+ Добавить</button>
+                </h2>
+                <div class="groups-list" id="groupsList">
+                    <div class="empty-state">Нет групп</div>
+                </div>
+                <div id="addGroupForm" class="add-group-form hidden">
+                    <input type="text" id="groupName" placeholder="Название группы" required>
+                    <input type="color" id="groupColor" value="#667eea">
+                    <button class="btn btn-primary" onclick="saveGroup()">Сохранить</button>
+                </div>
+                <input type="hidden" id="editGroupId">
+            </div>
+
             <!-- Форма добавления -->
             <div class="card">
                 <h2 id="formTitle">Добавить ученика</h2>
@@ -458,14 +614,22 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Длительность занятия (мин)</label>
-                        <select id="lessonDuration">
-                            <option value="45">45 минут</option>
-                            <option value="60" selected>60 минут (1 час)</option>
-                            <option value="90">90 минут (1.5 часа)</option>
-                            <option value="120">120 минут (2 часа)</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Длительность занятия (мин)</label>
+                            <select id="lessonDuration">
+                                <option value="45">45 минут</option>
+                                <option value="60" selected>60 минут (1 час)</option>
+                                <option value="90">90 минут (1.5 часа)</option>
+                                <option value="120">120 минут (2 часа)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Группа</label>
+                            <select id="studentGroup">
+                                <option value="">Без группы</option>
+                            </select>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" id="submitBtn">Добавить</button>
@@ -476,8 +640,11 @@
             <!-- Список учеников -->
             <div class="card">
                 <h2>Список учеников</h2>
-                <div class="search-box">
+                <div class="search-filter-row">
                     <input type="text" id="searchInput" placeholder="Поиск по имени или предмету...">
+                    <select id="filterGroup">
+                        <option value="">Все группы</option>
+                    </select>
                 </div>
                 <div class="student-list" id="studentList">
                     <div class="empty-state">Загрузка...</div>
@@ -495,6 +662,7 @@
 
         // Данные
         let students = [];
+        let groups = [];
         let currentUser = null;
 
         // DOM элементы
@@ -503,6 +671,7 @@
         const appView = document.getElementById('appView');
         const studentList = document.getElementById('studentList');
         const searchInput = document.getElementById('searchInput');
+        const filterGroup = document.getElementById('filterGroup');
         const form = document.getElementById('studentForm');
 
         // Инициализация
@@ -553,6 +722,7 @@
             appView.classList.remove('hidden');
 
             document.getElementById('userEmail').textContent = currentUser.email;
+            await loadGroups();
             await loadStudents();
         }
 
@@ -648,6 +818,147 @@
             await db.auth.signOut();
         }
 
+        // ===== ГРУППЫ =====
+
+        // Загрузка групп
+        async function loadGroups() {
+            const { data, error } = await db
+                .from('groups')
+                .select('*')
+                .order('created_at', { ascending: true });
+
+            if (error) {
+                console.error('Error loading groups:', error);
+                return;
+            }
+
+            groups = data || [];
+            renderGroups();
+            updateGroupSelects();
+        }
+
+        // Отрисовка групп
+        function renderGroups() {
+            const container = document.getElementById('groupsList');
+
+            if (groups.length === 0) {
+                container.innerHTML = '<div class="empty-state">Нет групп. Создайте первую!</div>';
+                return;
+            }
+
+            container.innerHTML = groups.map(group => {
+                const count = students.filter(s => s.group_id === group.id).length;
+                return `
+                    <div class="group-item" style="background: ${group.color}">
+                        <span class="group-item-name">${escapeHtml(group.name)}</span>
+                        <span class="group-item-count">${count}</span>
+                        <div class="group-item-actions">
+                            <button class="group-item-btn" onclick="editGroup('${group.id}')" title="Редактировать">✎</button>
+                            <button class="group-item-btn" onclick="deleteGroup('${group.id}')" title="Удалить">×</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Обновить выпадающие списки групп
+        function updateGroupSelects() {
+            const studentGroupSelect = document.getElementById('studentGroup');
+            const filterGroupSelect = document.getElementById('filterGroup');
+
+            const options = '<option value="">Без группы</option>' +
+                groups.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
+
+            const filterOptions = '<option value="">Все группы</option>' +
+                '<option value="none">Без группы</option>' +
+                groups.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
+
+            studentGroupSelect.innerHTML = options;
+            filterGroupSelect.innerHTML = filterOptions;
+        }
+
+        // Показать/скрыть форму группы
+        function toggleGroupForm() {
+            const form = document.getElementById('addGroupForm');
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) {
+                document.getElementById('groupName').focus();
+            } else {
+                document.getElementById('groupName').value = '';
+                document.getElementById('groupColor').value = '#667eea';
+                document.getElementById('editGroupId').value = '';
+            }
+        }
+
+        // Сохранить группу
+        async function saveGroup() {
+            const name = document.getElementById('groupName').value.trim();
+            const color = document.getElementById('groupColor').value;
+            const editId = document.getElementById('editGroupId').value;
+
+            if (!name) return;
+
+            if (editId) {
+                const { error } = await db
+                    .from('groups')
+                    .update({ name, color })
+                    .eq('id', editId);
+
+                if (error) {
+                    alert('Ошибка сохранения: ' + error.message);
+                    return;
+                }
+            } else {
+                const { error } = await db
+                    .from('groups')
+                    .insert([{ name, color, user_id: currentUser.id }]);
+
+                if (error) {
+                    alert('Ошибка создания: ' + error.message);
+                    return;
+                }
+            }
+
+            toggleGroupForm();
+            await loadGroups();
+            renderStudents(searchInput.value, filterGroup.value);
+        }
+
+        // Редактировать группу
+        function editGroup(id) {
+            const group = groups.find(g => g.id === id);
+            if (!group) return;
+
+            document.getElementById('editGroupId').value = group.id;
+            document.getElementById('groupName').value = group.name;
+            document.getElementById('groupColor').value = group.color;
+            document.getElementById('addGroupForm').classList.remove('hidden');
+            document.getElementById('groupName').focus();
+        }
+
+        // Удалить группу
+        async function deleteGroup(id) {
+            const group = groups.find(g => g.id === id);
+            if (!group) return;
+
+            if (!confirm(`Удалить группу "${group.name}"? Ученики останутся без группы.`)) return;
+
+            const { error } = await db
+                .from('groups')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert('Ошибка удаления: ' + error.message);
+                return;
+            }
+
+            await loadGroups();
+            await loadStudents();
+        }
+
+        // ===== УЧЕНИКИ =====
+
         // Загрузка учеников
         async function loadStudents() {
             const { data, error } = await db
@@ -661,7 +972,8 @@
             }
 
             students = data || [];
-            renderStudents();
+            renderStudents(searchInput.value, filterGroup.value);
+            renderGroups(); // Обновить счетчики
             updateSummary();
         }
 
@@ -682,27 +994,53 @@
             document.getElementById('totalIncome').textContent = totalIncome.toLocaleString('ru-RU');
         }
 
+        // Получить группу по ID
+        function getGroup(groupId) {
+            return groups.find(g => g.id === groupId);
+        }
+
         // Отрисовка списка учеников
-        function renderStudents(filter = '') {
-            const filtered = students.filter(s =>
-                s.name.toLowerCase().includes(filter.toLowerCase()) ||
-                s.subject.toLowerCase().includes(filter.toLowerCase())
-            );
+        function renderStudents(filter = '', groupFilter = '') {
+            let filtered = students;
+
+            // Фильтр по группе
+            if (groupFilter === 'none') {
+                filtered = filtered.filter(s => !s.group_id);
+            } else if (groupFilter) {
+                filtered = filtered.filter(s => s.group_id === groupFilter);
+            }
+
+            // Поиск по тексту
+            if (filter) {
+                filtered = filtered.filter(s =>
+                    s.name.toLowerCase().includes(filter.toLowerCase()) ||
+                    s.subject.toLowerCase().includes(filter.toLowerCase())
+                );
+            }
 
             if (filtered.length === 0) {
                 studentList.innerHTML = '<div class="empty-state">' +
-                    (filter ? 'Ничего не найдено' : 'Список пуст. Добавьте первого ученика!') +
+                    (filter || groupFilter ? 'Ничего не найдено' : 'Список пуст. Добавьте первого ученика!') +
                     '</div>';
                 return;
             }
 
             studentList.innerHTML = filtered.map(student => {
                 const lessonPrice = calculateLessonPrice(student.monthly_payment, student.lessons_per_month);
+                const group = getGroup(student.group_id);
+                const groupBadge = group
+                    ? `<span class="student-group-badge" style="background: ${group.color}">${escapeHtml(group.name)}</span>`
+                    : '';
 
                 return `
-                    <div class="student-item">
-                        <div class="student-name">${escapeHtml(student.name)}</div>
-                        <div class="student-subject">${escapeHtml(student.subject)}</div>
+                    <div class="student-item" style="border-left-color: ${group ? group.color : '#667eea'}">
+                        <div class="student-header">
+                            <div>
+                                <div class="student-name">${escapeHtml(student.name)}</div>
+                                <div class="student-subject">${escapeHtml(student.subject)}</div>
+                            </div>
+                            ${groupBadge}
+                        </div>
                         <div class="student-details">
                             <span>${student.phone || 'Нет телефона'}</span>
                             <span>${student.lessons_per_month} зан/мес × ${student.lesson_duration} мин</span>
@@ -720,6 +1058,7 @@
 
         // Защита от XSS
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -732,13 +1071,16 @@
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
 
+            const groupId = document.getElementById('studentGroup').value;
+
             const studentData = {
                 name: document.getElementById('name').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 subject: document.getElementById('subject').value.trim(),
                 monthly_payment: parseInt(document.getElementById('monthlyPayment').value),
                 lessons_per_month: parseInt(document.getElementById('lessonsPerMonth').value),
-                lesson_duration: parseInt(document.getElementById('lessonDuration').value)
+                lesson_duration: parseInt(document.getElementById('lessonDuration').value),
+                group_id: groupId || null
             };
 
             const editId = document.getElementById('editId').value;
@@ -773,6 +1115,7 @@
 
             form.reset();
             document.getElementById('lessonDuration').value = '60';
+            document.getElementById('studentGroup').value = '';
             submitBtn.disabled = false;
 
             await loadStudents();
@@ -790,6 +1133,7 @@
             document.getElementById('monthlyPayment').value = student.monthly_payment;
             document.getElementById('lessonsPerMonth').value = student.lessons_per_month;
             document.getElementById('lessonDuration').value = student.lesson_duration;
+            document.getElementById('studentGroup').value = student.group_id || '';
 
             document.getElementById('formTitle').textContent = 'Редактирование';
             document.getElementById('submitBtn').textContent = 'Сохранить';
@@ -803,6 +1147,7 @@
             document.getElementById('editId').value = '';
             form.reset();
             document.getElementById('lessonDuration').value = '60';
+            document.getElementById('studentGroup').value = '';
             document.getElementById('formTitle').textContent = 'Добавить ученика';
             document.getElementById('submitBtn').textContent = 'Добавить';
             document.getElementById('cancelBtn').classList.add('hidden');
@@ -829,9 +1174,13 @@
             await loadStudents();
         }
 
-        // Поиск
+        // Поиск и фильтрация
         searchInput.addEventListener('input', function() {
-            renderStudents(this.value);
+            renderStudents(this.value, filterGroup.value);
+        });
+
+        filterGroup.addEventListener('change', function() {
+            renderStudents(searchInput.value, this.value);
         });
 
         // Запуск
